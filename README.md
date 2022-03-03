@@ -15,3 +15,8 @@ Dans le cadre de la RPCU, trois cas sont possibles :
 * le point à tranformer se trouve à l'intérieur d'une feuille cadastrale mais dans le domaine non cadastré : on applique une triangulation à partir des points voisins
 * le point est en dehors des feuilles cadastrales : on ne fait rien
 
+## Compilation
+Les outils sont écrits en C++ pur, sans dépendance à une quelconque bibliothèque.
+Sous Windows, un solution Visual Studion est livrée. Cette solution contient deux projets RPCUPairing et RPCUMover.
+
+Sous Linux, un Makefile est fourni.
