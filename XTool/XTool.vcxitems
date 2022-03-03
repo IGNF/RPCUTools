@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{bf459fee-e391-4033-a83c-2eecfc70656e}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)XAffinity2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XAlgoGeod.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XBaryMover.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XDBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XDelaunay.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XDomGeod.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XEndian.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XErrorXml.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XFile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XFrame.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoClass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeocon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoconConverter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeodGrid.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoJson.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoJsonConverter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoLine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoMap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoMemVector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoPoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoPoly.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoPref.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoProjection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoRaster.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoRepres.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGeoVector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XGpx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XInterpol.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XKml.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XKmlConverter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XKmlWriter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XLambert.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XMatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XMifMid.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XMifMidConverter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XNCGeod.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XParserXML.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XPath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XPolyContour.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XPolygone2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XPt2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XPt3D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XShapefile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XShapefileConverter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XShapefileRecord.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XShapefileVector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XTrigMover.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XWebMercator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)XXml.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)XAffinity2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XAlgoGeod.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XBaryMover.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XDBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XDelaunay.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XDomGeod.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XEndian.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XErrorXml.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XFile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XFrame.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoClass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeocon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoconConverter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeodGrid.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoJson.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoJsonConverter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoLine.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoMap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoMemVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoPoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoPoly.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoPref.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoProjection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoRaster.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoRepres.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGeoVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XGpx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XInterpol.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XKml.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XKmlConverter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XKmlWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XLambert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XMatcher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XMifMid.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XMifMidConverter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XNCGeod.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XParserXML.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPolyContour.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPolygone2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPt2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPt2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPt3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XPt3D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XShapefile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XShapefileConverter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XShapefileRecord.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XShapefileVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XTrigMover.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XWaitConsole.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XWebMercator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)XXml.h" />
+  </ItemGroup>
+</Project>
