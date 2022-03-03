@@ -18,6 +18,8 @@
 #include "XPath.h"
 #include "XMatcher.h"
 #include "XWaitConsole.h"
+#include "XGeoProjection.h"
+#include "XGeoPref.h"
 
 // Gestionnaire d'erreurs
 class AppError : public XError {
@@ -37,13 +39,22 @@ public:
 // Usage de l'application
 int Usage()
 {
-  std::cout << "appariement " << std::endl
+  std::cout << "RPCUPairing " << std::endl
     << "\t--i fichier_avant " << std::endl
     << "\t--o fichier_apres " << std::endl
     << "\t--r fichier_resultat (sans extension) " << std::endl
     << "\t--a attribut_lien_avant" << std::endl
     << "\t--b attribut_lien_apres" << std::endl
-    << "\t--w ecriture_polygones" << std::endl;
+    << "\t--w ecriture_polygones" << std::endl
+    << "\t--proj projection" << std::endl;
+  std::cout << "Projections disponibles :" << std::endl;
+  for (int i = XGeoProjection::RGF93; i <= XGeoProjection::NC_RGNC91_UTM59; i++) {
+    std::string shortname = XGeoProjection::ProjectionShortName((XGeoProjection::XProjCode)i);
+    if (shortname.size() < 1)
+      continue;
+    std::cout << "\t" << XGeoProjection::ProjectionName((XGeoProjection::XProjCode)i) << " : " << shortname << std::endl;
+  }
+
   return -1;
 }
 
@@ -64,7 +75,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 int main(int argc, char* argv[])
 {
   std::string version = "1.0";
-  std::string file_in, file_out, file_result, attname_in, attname_out, poly;
+  std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
   double min_vector_size = 0.1;
@@ -89,6 +100,9 @@ int main(int argc, char* argv[])
 
     std::cout << "Ecriture des polygones [o/n] : ";
     std::cin >> poly;
+
+    std::cout << "Projection (L93, CC42, CC43, RGR92...) : ";
+    std::cin >> proj;
   }
   else {
     if ((argc % 2) != 1)
@@ -105,6 +119,7 @@ int main(int argc, char* argv[])
       if (token == "--a") attname_in = value;
       if (token == "--b") attname_out = value;
       if (token == "--w") poly = value;
+      if (token == "--proj") proj = value;
     }
   }
 
@@ -114,7 +129,19 @@ int main(int argc, char* argv[])
     write_poly = true;
   file_result += ".";
 
-  //
+  // Recherche de la projection
+  XGeoPref pref;
+  for (int proj_code = XGeoProjection::RGF93; proj_code <= XGeoProjection::NC_RGNC91_UTM59; proj_code++) {
+    std::string shortname = XGeoProjection::ProjectionShortName((XGeoProjection::XProjCode)proj_code);
+    if (shortname.size() < 1)
+      continue;
+    if (shortname == proj) {
+      pref.Projection((XGeoProjection::XProjCode)proj_code);
+      break;
+    }
+  }
+
+  // Traitement
   XGeoBase base;
   XGeoClass* C_in, * C_out;
 

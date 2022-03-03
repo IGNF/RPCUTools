@@ -296,6 +296,7 @@ bool XMifMidConverter::BeginClass(XGeoClass* classe, const char* folder)
 
   // Ecriture des donnees
   m_Mif << "DATA" << std::endl;
+  return true;
 }
 
 //-----------------------------------------------------------------------------

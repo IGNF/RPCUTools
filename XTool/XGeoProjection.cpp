@@ -503,6 +503,79 @@ std::string XGeoProjection::ProjectionName(XProjCode proj)
 }
 
 //-----------------------------------------------------------------------------
+// Renvoie le nom court de la projection
+//-----------------------------------------------------------------------------
+std::string XGeoProjection::ProjectionShortName(XProjCode proj)
+{
+	std::string name;
+	switch (proj) {
+		// France Metropolitaine
+	case RGF93: name = "RGF93"; break;
+	case Lambert1: name = "L1"; break;
+	case Lambert2: name = "L2"; break;
+	case Lambert3: name = "L3"; break;
+	case Lambert4: name = "L4"; break;
+	case Lambert2E: name = "L2E"; break;
+	case Lambert93: name = "L93"; break;
+	case LambertCC42: name = "CC42"; break;
+	case LambertCC43: name = "CC43"; break;
+	case LambertCC44: name = "CC44"; break;
+	case LambertCC45: name = "CC45"; break;
+	case LambertCC46: name = "CC46"; break;
+	case LambertCC47: name = "CC47"; break;
+	case LambertCC48: name = "CC48"; break;
+	case LambertCC49: name = "CC49"; break;
+	case LambertCC50: name = "CC50"; break;
+
+		// Europe
+	case ETRS89LCC: name = "ETRS89-LCC"; break;
+	case ETRS89LAEA: name = "ETRS89-LAEA"; break;
+	case ETRS89TM30: name = "ETRS89TM30"; break;
+	case ETRS89TM31: name = "ETRS89TM31"; break;
+	case ETRS89TM32: name = "ETRS89TM32"; break;
+
+		// Antilles
+	case FortDesaix: name = "FortDesaix"; break;
+	case SainteAnne: name = "SainteAnne"; break;
+	case FortMarigot: name = "FortMarigot"; break;
+	case RRAF: name = "RRAF"; break;
+	case RGAF09: name = "RGAF09"; break;
+
+		// Guyane
+	case CSG1967_UTM21: name = "CSG1967UTM21"; break;
+	case CSG1967_UTM22: name = "CSG1967UTM22"; break;
+	case RGFG95: name = "RGFG95"; break;
+
+		// Reunion
+	case PitonNeiges: name = "PitonNeiges"; break;
+	case RGR92: name = "RGR92"; break;
+
+		// Saint Pierre et Miquelon
+	case SPMiquelon1950: name = "SPM1950"; break;
+	case RGSPM06: name = "RGSPM06"; break;
+
+		// Mayotte
+	case Combani1950: name = "Combani1950"; break;
+	case Cadastre1997: name = "Cadastre1997"; break;
+	case RGM04: name = "RGM04"; break;
+
+		// WebMercator
+	case WebMercator: name = "WebMercator"; break;
+
+		// Nouvelle-Caledonie
+	case NC_IGN72: name = "IGN72GrandeTerre"; break;
+	case NC_NEA74: name = "NEA74Noumea"; break;
+	case NC_RGNC91_Lambert: name = "RGNC1991LambertNC"; break;
+	case NC_RGNC91_UTM57: name = "RGNC1991UTM57"; break;
+	case NC_RGNC91_UTM58: name = "RGNC1991UTM58"; break;
+	case NC_RGNC91_UTM59: name = "RGNC1991UTM59"; break;
+
+	default: name = "";
+	}
+	return name;
+}
+
+//-----------------------------------------------------------------------------
 // Renvoie le code EPSG de la projection
 //-----------------------------------------------------------------------------
 uint32 XGeoProjection::EPSGCode(XProjCode proj)

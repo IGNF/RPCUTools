@@ -20,6 +20,8 @@
 #include "XTrigMover.h"
 #include "XBaryMover.h"
 #include "XMifMidConverter.h"
+#include "XGeoProjection.h"
+#include "XGeoPref.h"
 
 // Gestionnaire d'erreurs
 class AppError : public XError {
@@ -43,7 +45,15 @@ int Usage()
 		<< "\t--p fichier_parcelle " << std::endl
 		<< "\t--f fichier_feuille " << std::endl
 		<< "\t--i fichier_a_traiter " << std::endl
-		<< "\t--o repertoire_resultat" << std::endl;
+		<< "\t--o repertoire_resultat" << std::endl
+		<< "\t--proj projection" << std::endl;
+	std::cout << "Projections disponibles :" << std::endl;
+	for (int i = XGeoProjection::RGF93; i <= XGeoProjection::NC_RGNC91_UTM59; i++) {
+		std::string shortname = XGeoProjection::ProjectionShortName((XGeoProjection::XProjCode)i);
+		if (shortname.size() < 1)
+			continue;
+		std::cout << "\t" << XGeoProjection::ProjectionName((XGeoProjection::XProjCode)i) << " : " << shortname << std::endl;
+	}
 	return -1;
 }
 
@@ -64,7 +74,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 int main(int argc, char* argv[])
 {
 	std::string version = "1.0";
-	std::string file_par, file_feu, file_transfo_in, dir_result;
+	std::string file_par, file_feu, file_transfo_in, dir_result, proj = "L93";
 
 	std::cout << "RPCUMover version " << version << std::endl;
 
@@ -79,6 +89,9 @@ int main(int argc, char* argv[])
 		std::cin >> file_transfo_in;
 		std::cout << "Nom du repertoire de sortie : ";
 		std::cin >> dir_result;
+
+		std::cout << "Projection (L93, CC42, CC43, RGR92...) : ";
+		std::cin >> proj;
 	}
 	else {
 		if ((argc % 2) != 1)
@@ -91,6 +104,7 @@ int main(int argc, char* argv[])
 			if (token == "--f") file_feu = value;
 			if (token == "--i") file_transfo_in = value;
 			if (token == "--o") dir_result = value;
+			if (token == "--proj") proj = value;
 			if (token == "-h") return Usage();
 			if (token == "--h") return Usage();
 		}
@@ -98,6 +112,18 @@ int main(int argc, char* argv[])
 
 	if (file_par.empty() || file_feu.empty() || file_transfo_in.empty() || dir_result.empty())
 		return Usage();
+
+	// Recherche de la projection
+	XGeoPref pref;
+	for (int proj_code = XGeoProjection::RGF93; proj_code <= XGeoProjection::NC_RGNC91_UTM59; proj_code++) {
+		std::string shortname = XGeoProjection::ProjectionShortName((XGeoProjection::XProjCode)proj_code);
+		if (shortname.size() < 1)
+			continue;
+		if (shortname == proj) {
+			pref.Projection((XGeoProjection::XProjCode)proj_code);
+			break;
+		}
+	}
 
 	// Import des fichiers de donnees
 	XGeoBase base;
@@ -207,8 +233,8 @@ int main(int argc, char* argv[])
 				Result.push_back(D);
 			}
 		}
-		Vin->Unload();
 		Mif.WriteObject(Vin, &Result);
+		Vin->Unload();
 	}	//endfor i
 
 	std::cout << "Traitement termine de " << C_in->NbVector() << " objets" << std::endl;
