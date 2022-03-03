@@ -14,6 +14,6 @@ src_files_RPCUPairing := ${src_files_XTool} ./RPCUPairing/RPCUPairing.cpp
 RPCUMover: $(src_files_RPCUMover)
 $(CC) $(CXXFLAGS) -o RPCUMover $(src_files_RPCUMover)
      
-RPCUPairing: $(src_files_RPCUPairing)
-$(CC) $(CXXFLAGS) -o RPCUPairing $(src_files_RPCUPairing)
+#RPCUPairing: $(src_files_RPCUPairing)
+#$(CC) $(CXXFLAGS) -o RPCUPairing $(src_files_RPCUPairing)
      
