@@ -33,13 +33,22 @@ bool XMatcher::SetOutput(std::string filename, bool poly_out)
 {
   m_bPoly_out = poly_out;
 
-  std::string path_mif = filename + "mif";
-  std::string path_mid = filename + "mid";
+  std::string path_mif = filename + "_vec.mif";
+  std::string path_mid = filename + "_vec.mid";
 
   m_Mif.open(path_mif.c_str());
   m_Mid.open(path_mid.c_str());
   if ((!m_Mid.good())||(!m_Mif.good()))
     return false;
+
+  if (m_bPoly_out) {
+    path_mif = filename + "_poly.mif";
+    path_mid = filename + "_poly.mid";
+    m_MifPoly.open(path_mif.c_str());
+    m_MidPoly.open(path_mid.c_str());
+    if ((!m_MidPoly.good()) || (!m_MifPoly.good()))
+      return false;
+  }
 
   XGeoPref pref;
   m_Mif.setf(std::ios::fixed);
@@ -57,6 +66,24 @@ bool XMatcher::SetOutput(std::string filename, bool poly_out)
   m_Mif << "PART " <<  "Integer" << std::endl;
   m_Mif << "NUM " << "Integer" << std::endl;
   m_Mif << "DATA" << std::endl;
+
+  if (m_bPoly_out) {
+    m_MifPoly.setf(std::ios::fixed);
+    if (pref.Projection() == XGeoProjection::RGF93)
+      m_MifPoly.precision(6);
+    else
+      m_MifPoly.precision(2);
+
+    // Entete du MIF
+    m_MifPoly << "VERSION 300" << std::endl;
+    m_MifPoly << "Charset \"WindowsLatin1\"" << std::endl;
+    m_MifPoly << XGeoProjection::MifProjection(pref.Projection()) << std::endl;
+    m_MifPoly << "COLUMNS 3" << std::endl;
+    m_MifPoly << "JOINT_VALUE " << "char (40)" << std::endl;
+    m_MifPoly << "PART " << "Integer" << std::endl;
+    m_MifPoly << "NUM " << "Integer" << std::endl;
+    m_MifPoly << "DATA" << std::endl;
+  }
 
   return true;
 }
@@ -150,14 +177,14 @@ bool XMatcher::Match(XGeoVector* Vin, XGeoVector* Vout, std::string joint_key)
     }
     FilterHomolog();
 
-    uint32 nb_homo = WriteHomolog(joint_key, part);
-    if ((m_bPoly_out)&&(nb_homo > 0)) {
+    bool flag_homo = WriteHomolog(joint_key, part);
+    if ((m_bPoly_out)&&(flag_homo)) {
       XBaryMover mover;
       m_Homo_in.push_back(m_Homo_in[0]);
       m_Homo_out.push_back(m_Homo_out[0]);
       mover.XDensifier(m_Pt_in, m_Pt_out, m_Homo_in, m_Homo_out, m_Poly_in, m_Poly_out);
       //WritePoly(joint_key, part);
-      m_Part.push_back(m_Poly_in.size());
+      m_Part.push_back((int)m_Poly_in.size());
       m_Part_in.insert(m_Part_in.end(), m_Poly_in.begin(), m_Poly_in.end());
       m_Part_out.insert(m_Part_out.end(), m_Poly_out.begin(), m_Poly_out.end());
       m_Poly_in.clear();
@@ -296,7 +323,7 @@ bool XMatcher::FilterHomolog()
 //-----------------------------------------------------------------------------
 // Ecriture des vertex homologues
 //-----------------------------------------------------------------------------
-uint32 XMatcher::WriteHomolog(std::string id, uint32 part)
+bool XMatcher::WriteHomolog(std::string id, uint32 part)
 {
   if (m_Homo_in.size() != m_Homo_out.size())
     return false;
@@ -314,7 +341,7 @@ uint32 XMatcher::WriteHomolog(std::string id, uint32 part)
       m_Mid << id << "\t" << part << "\t" << i << std::endl;
     }
   }
-  return nb_vec;
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -322,19 +349,19 @@ uint32 XMatcher::WriteHomolog(std::string id, uint32 part)
 //-----------------------------------------------------------------------------
 bool XMatcher::WritePoly(std::string id, uint32 part)
 {
-  m_Mif << "REGION 1" << std::endl;
-  m_Mif << m_Poly_in.size() << std::endl;
+  m_MifPoly << "REGION 1" << std::endl;
+  m_MifPoly << m_Poly_in.size() << std::endl;
   for (uint32 i = 0; i < m_Poly_in.size(); i++)
-    m_Mif << m_Poly_in[i].X << " " << m_Poly_in[i].Y << std::endl;
+    m_MifPoly << m_Poly_in[i].X << " " << m_Poly_in[i].Y << std::endl;
   //m_Mif << m_Poly_in[0].X << " " << m_Poly_in[0].Y << std::endl;
-  m_Mid << id << "\t" << part << "\t" << "0" << std::endl;
+  m_MidPoly << id << "\t" << part << "\t" << "0" << std::endl;
 
-  m_Mif << "REGION 1" << std::endl;
-  m_Mif << m_Poly_out.size() << std::endl;
+  m_MifPoly << "REGION 1" << std::endl;
+  m_MifPoly << m_Poly_out.size() << std::endl;
   for (uint32 i = 0; i < m_Poly_in.size(); i++)
-    m_Mif << m_Poly_out[i].X << " " << m_Poly_out[i].Y << std::endl;
+    m_MifPoly << m_Poly_out[i].X << " " << m_Poly_out[i].Y << std::endl;
   //m_Mif << m_Poly_out[0].X << " " << m_Poly_out[0].Y << std::endl;
-  m_Mid << id << "\t" << part << "\t" << "1" << std::endl;
+  m_MidPoly << id << "\t" << part << "\t" << "1" << std::endl;
 
   return true;
 }
@@ -345,26 +372,26 @@ bool XMatcher::WritePoly(std::string id, uint32 part)
 bool XMatcher::WritePoly(std::string id)
 {
   uint32 start = 0;
-  m_Mif << "REGION " << m_Part.size() << std::endl;
+  m_MifPoly << "REGION " << m_Part.size() << std::endl;
   for (uint32 i = 0; i < m_Part.size(); i++) {
-    m_Mif << m_Part[i] << std::endl;
+    m_MifPoly << m_Part[i] << std::endl;
     for (uint32 j = start; j < (start + m_Part[i]); j++) {
-      m_Mif << m_Part_in[j].X << " " << m_Part_in[j].Y << std::endl;
+      m_MifPoly << m_Part_in[j].X << " " << m_Part_in[j].Y << std::endl;
     }
     start += m_Part[i];
   }
-  m_Mid << id << "\t" << "0" << "\t" << "0" << std::endl;
+  m_MidPoly << id << "\t" << "0" << "\t" << "0" << std::endl;
 
   start = 0;
-  m_Mif << "REGION " << m_Part.size() << std::endl;
+  m_MifPoly << "REGION " << m_Part.size() << std::endl;
   for (uint32 i = 0; i < m_Part.size(); i++) {
-    m_Mif << m_Part[i] << std::endl;
+    m_MifPoly << m_Part[i] << std::endl;
     for (uint32 j = start; j < (start + m_Part[i]); j++) {
-      m_Mif << m_Part_out[j].X << " " << m_Part_out[j].Y << std::endl;
+      m_MifPoly << m_Part_out[j].X << " " << m_Part_out[j].Y << std::endl;
     }
     start += m_Part[i];
   }
-  m_Mid << id << "\t" << "0" << "\t" << "1" << std::endl;
+  m_MidPoly << id << "\t" << "0" << "\t" << "1" << std::endl;
 
   return true;
 }

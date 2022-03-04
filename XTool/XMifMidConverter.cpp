@@ -389,6 +389,7 @@ bool XMifMidConverter::WriteObject(XGeoVector* vector, std::vector<XPt2D>* Pt, s
 
   if (Pt == NULL)
     vector->Unload();
+  return true;
 }
 
 //-----------------------------------------------------------------------------

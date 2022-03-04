@@ -52,11 +52,12 @@ protected:
   std::ofstream       m_Mif;
   std::ofstream       m_Mid;
   bool                m_bPoly_out;
-
+  std::ofstream       m_MifPoly;
+  std::ofstream       m_MidPoly;
 
   uint32 FindHomolog();
   bool FilterHomolog();
-  uint32 WriteHomolog(std::string id, uint32 part);
+  bool WriteHomolog(std::string id, uint32 part);
   bool WritePoly(std::string id, uint32 part);
   bool WritePoly(std::string id);
 };

@@ -74,7 +74,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 //
 int main(int argc, char* argv[])
 {
-  std::string version = "1.0";
+  std::string version = "1.1";
   std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     std::cout << "Nom de l'attribut lien : ";
     std::cin >> attname_out;
 
-    std::cout << "Nom du fichier de sortie (sans extension) : ";
+    std::cout << "Nom du fichier de sortie (sans point ni extension) : ";
     std::cin >> file_result;
 
     std::cout << "Ecriture des polygones [o/n] : ";
@@ -127,7 +127,6 @@ int main(int argc, char* argv[])
     return Usage();
   if ((poly == "O") || (poly == "o") || (poly == "y") || (poly == "Y"))
     write_poly = true;
-  file_result += ".";
 
   // Recherche de la projection
   XGeoPref pref;
@@ -161,7 +160,7 @@ int main(int argc, char* argv[])
   matcher.SetOutput(file_result, write_poly);
 
   std::ofstream log_file;
-  log_file.open(file_result + "log", std::ios_base::out);
+  log_file.open(file_result + ".log", std::ios_base::out);
   AppError error;
   error.Output(&log_file);
   matcher.SetLog(&error);

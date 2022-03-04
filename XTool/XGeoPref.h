@@ -56,11 +56,11 @@ public:
 
   // Preferences Internet
   inline uint16 GoogleMode() { return m_nGoogleMode;}
-  void GoogleMode(uint16 mode) { m_nGoogleMode = mode;}
+  void GoogleMode(byte mode) { m_nGoogleMode = mode;}
   inline uint16 VEMode() { return m_nVEMode;}
-  void VEMode(uint16 mode) { m_nVEMode = mode;}
+  void VEMode(byte mode) { m_nVEMode = mode;}
   inline uint16 GeoportMode() { return m_nGeoportMode;}
-  void GeoportMode(uint16 mode) { m_nGeoportMode = mode;}
+  void GeoportMode(byte mode) { m_nGeoportMode = mode;}
   inline bool AutoSynchro() { return m_bAutoSynchro;}
   void AutoSynchro(bool flag) { m_bAutoSynchro = flag;}
   inline bool Cadastre() { return m_bCadastre;}
