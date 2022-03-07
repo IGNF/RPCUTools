@@ -78,8 +78,10 @@ bool XTrigMover::MovePoint(XPt2D P_in, XPt2D& P_out, double max_dist)
 
 			if (dist(A, P_in) < epsilon) {	// On est sur un sommet, donc pas la peine de trianguler
 				P_out = B;
-				V_in->Unload();
-				V_out->Unload();
+				if (!vin_loaded)
+					V_in->Unload();
+				if (!vout_loaded)
+					V_out->Unload();
 				for (uint32 j = 0; j < L.size(); j++)
 					delete L[j];
 				delaunay.ClearVector();

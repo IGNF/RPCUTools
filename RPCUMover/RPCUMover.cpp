@@ -73,7 +73,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 // Fonction principale
 int main(int argc, char* argv[])
 {
-	std::string version = "1.0";
+	std::string version = "1.1";
 	std::string file_par, file_feu, file_transfo_in, dir_result, proj = "L93";
 
 	std::cout << "RPCUMover version " << version << std::endl;
@@ -178,6 +178,8 @@ int main(int argc, char* argv[])
 	XPt2D P, D;
 
 	// Traitement pour chacun des vecteurs en entree
+	uint32 nb_completed = 0;
+	std::vector<XGeoVector*> L;
 	for (uint32 i = 0; i < C_in->NbVector(); i++) {
 		wait.StepIt();
 		XGeoVector* Vin = C_in->Vector(i);
@@ -185,18 +187,34 @@ int main(int argc, char* argv[])
 			continue;
 		Result.clear();
 
+		// Dechargement des geometries chargees a l'iteration N-1
+		for (uint32 i = 0; i < L.size(); i++)	// Dechargement des geometries en intersection
+			L[i]->Unload();
+		L.clear();
+
 		// Recherche des geometries en intersection
-		std::vector<XGeoVector*> L;
 		for (uint32 j = 0; j < T.size() / 2; j++) {
 			if (!Vin->Frame().Intersect(T[j * 2]->Frame()))
 				continue;
 			L.push_back(T[j * 2]);
 			L.push_back(T[j * 2 + 1]);
-			T[j * 2]->LoadGeom2D();
-			T[j * 2 + 1]->LoadGeom2D();
+			bool loaded = true;
+			if (!T[j * 2]->IsLoaded()) {
+				loaded &= T[j * 2]->LoadGeom2D();
+			}
+			if (!T[j * 2 + 1]->IsLoaded()) {
+				loaded &= T[j * 2 + 1]->LoadGeom2D();
+			}
+			if (!loaded) {
+				std::cerr << "Impossible de charger les objets parcelles pour l'objet " << i << std::endl;
+				std::cerr << j << "objets parcelles charges" << std::endl;
+				return -1;
+			}
 		}
+		/*
 		if (L.size() < 1)	// Le vecteur en entree est hors zone
 			continue;
+			*/
 
 		// Traitement pour chacun des points du vecteur en entree
 		Result.clear();
@@ -235,8 +253,12 @@ int main(int argc, char* argv[])
 		}
 		Mif.WriteObject(Vin, &Result);
 		Vin->Unload();
+		nb_completed++;
 	}	//endfor i
 
-	std::cout << "Traitement termine de " << C_in->NbVector() << " objets" << std::endl;
+	for (uint32 i = 0; i < L.size(); i++)	// Dechargement des geometries en intersection
+		L[i]->Unload();
+
+	std::cout << "Traitement termine de " << C_in->NbVector() << " objets : " << nb_completed << " objets ecrits" << std::endl;
 	return 0;
 }
