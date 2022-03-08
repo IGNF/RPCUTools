@@ -10,6 +10,7 @@
 //-----------------------------------------------------------------------------
 
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include "XGeoBase.h"
 #include "XShapefile.h"
@@ -70,10 +71,45 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 	return NULL;
 }
 
+// Detection de doublons
+bool DetectDoublons(XGeoVector* Vin, std::ofstream* error, double epsilon, std::vector<XPt2D>* L = nullptr)
+{
+	if (!Vin->IsLoaded())
+		return false;
+	XPt2D A, B;
+	if (L == nullptr)
+		A = Vin->Pt(0);
+	else
+		A = (*L)[0];
+
+	uint32 nbpt;
+	for (uint32 i = 0; i < Vin->NbPart(); i++) {
+		if (i < Vin->NbPart() - 1)
+			nbpt = Vin->Part(i + 1) - Vin->Part(i);
+		else
+			nbpt = Vin->NbPt() - Vin->Part(i);
+		if (L == nullptr)
+			A = Vin->Pt(Vin->Part(i));
+		else
+			A = (*L)[Vin->Part(i)];
+		for (uint32 j = Vin->Part(i) + 1; j < Vin->Part(i) + nbpt; j++) {
+			if (L == nullptr)
+				B = Vin->Pt(j);
+			else
+				B = (*L)[j];
+			if (dist2(A, B) < epsilon*epsilon) {
+				*error << B.X << "," << B.Y << "," << "Doublon" << std::endl;
+			}
+			A = B;
+		}
+	}
+	return true;
+}
+
 // Fonction principale
 int main(int argc, char* argv[])
 {
-	std::string version = "1.1";
+	std::string version = "1.2";
 	std::string file_par, file_feu, file_transfo_in, dir_result, proj = "L93";
 
 	std::cout << "RPCUMover version " << version << std::endl;
@@ -149,6 +185,8 @@ int main(int argc, char* argv[])
 	// Creation des fichiers de sortie
 	XPath path;
 	std::ofstream log_file;
+	log_file.setf(std::ios::fixed);
+	log_file.precision(3);
 	log_file.open(path.FullName(dir_result.c_str(), "RCPUMover_log.csv"), std::ios_base::out);
 	log_file << version << std::endl;
 	log_file << "X,Y,Message" << std::endl;
@@ -168,6 +206,19 @@ int main(int argc, char* argv[])
 		T.push_back(V);
 	}
 
+	// Donnees feuilles cadastrales à prendre en compte
+	std::vector<XGeoVector*> FC;
+	for (uint32 i = 0; i < C_in_feu->NbVector(); i++) {
+		XGeoVector* V = C_in_feu->Vector(i);
+		if (V->NbPt() < 3)
+			continue;
+		if (!V->LoadGeom2D()) {
+			std::cerr << "Chargement des feuilles impossibles" << std::endl;
+			return -1;
+		}
+		FC.push_back(V);
+	}
+
 	XWaitConsole wait;
 	wait.SetStatus("Traitement");
 	wait.SetRange(0, C_in->NbVector());
@@ -185,6 +236,8 @@ int main(int argc, char* argv[])
 		XGeoVector* Vin = C_in->Vector(i);
 		if (!Vin->LoadGeom())
 			continue;
+		log_file << "0, 0, Objet entrant " << i << std::endl;
+		DetectDoublons(Vin, &log_file, 0.01);
 		Result.clear();
 
 		// Dechargement des geometries chargees a l'iteration N-1
@@ -220,6 +273,20 @@ int main(int argc, char* argv[])
 		Result.clear();
 		for (uint32 j = 0; j < Vin->NbPt(); j++) {
 			P = Vin->Pt(j);
+
+			// P est-il dans une feuille cadastrale ?
+			bool hors_zone = true;
+			for (uint32 k = 0; k < FC.size(); k++) {
+				if (FC[k]->IsIn2D(P)) {
+					hors_zone = false;
+					break;
+				}
+			}
+			if (hors_zone) { // Rien a faire : le point ne bouge pas
+				Result.push_back(P);
+				continue;
+			}
+
 			int index = -1;
 			// Test sur les sommets
 			index = -1;
@@ -251,6 +318,8 @@ int main(int argc, char* argv[])
 				Result.push_back(D);
 			}
 		}
+		log_file << "0, 0, Objet sortant " << i << std::endl;
+		DetectDoublons(Vin, &log_file, 0.01, &Result);
 		Mif.WriteObject(Vin, &Result);
 		Vin->Unload();
 		nb_completed++;
@@ -258,6 +327,8 @@ int main(int argc, char* argv[])
 
 	for (uint32 i = 0; i < L.size(); i++)	// Dechargement des geometries en intersection
 		L[i]->Unload();
+	for (uint32 i = 0; i < FC.size(); i++)	// Dechargement des feuilles cadastrales
+		FC[i]->Unload();
 
 	std::cout << "Traitement termine de " << C_in->NbVector() << " objets : " << nb_completed << " objets ecrits" << std::endl;
 	return 0;

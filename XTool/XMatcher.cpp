@@ -175,7 +175,16 @@ bool XMatcher::Match(XGeoVector* Vin, XGeoVector* Vout, std::string joint_key)
       }
       continue;
     }
-    FilterHomolog();
+    
+    uint32 nb_filter = 0;
+    do {
+      nb_filter++;
+      if (nb_filter > 10) { // Sans doute un probleme ...
+        std::string mes = "Filtrage impossible pour " + joint_key;
+        XErrorAlert(m_Log, mes);
+        break;
+      }
+    } while (!FilterHomolog());
 
     bool flag_homo = WriteHomolog(joint_key, part);
     if ((m_bPoly_out)&&(flag_homo)) {
@@ -317,7 +326,7 @@ bool XMatcher::FilterHomolog()
     m_Idx_in.erase(m_Idx_in.begin() + bad_index[bad_index.size() - 1 - i]);
     m_Idx_out.erase(m_Idx_out.begin() + bad_index[bad_index.size() - 1 - i]);
   }
-  return true;
+  return false;
 }
 
 //-----------------------------------------------------------------------------
