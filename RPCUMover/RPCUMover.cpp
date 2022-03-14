@@ -109,7 +109,7 @@ bool DetectDoublons(XGeoVector* Vin, std::ofstream* error, double epsilon, std::
 // Fonction principale
 int main(int argc, char* argv[])
 {
-	std::string version = "1.2";
+	std::string version = "1.3";
 	std::string file_par, file_feu, file_transfo_in, dir_result, proj = "L93";
 
 	std::cout << "RPCUMover version " << version << std::endl;
@@ -276,12 +276,22 @@ int main(int argc, char* argv[])
 
 			// P est-il dans une feuille cadastrale ?
 			bool hors_zone = true;
-			for (uint32 k = 0; k < FC.size(); k++) {
-				if (FC[k]->IsIn2D(P)) {
+			int indexFC = -1;
+			for (uint32 k = 0; k < FC.size() / 2; k++) {
+				if (FC[2*k]->IsSom2D(P, indexFC, 0.01)) {
+					hors_zone = false;
+					D = FC[2 * k + 1]->Pt(indexFC);
+					Result.push_back(D);
+					break;
+				}
+				if (FC[2*k]->IsIn2D(P)) {
 					hors_zone = false;
 					break;
 				}
 			}
+			if (indexFC >= 0) // Le point a ete trouve
+				continue;
+
 			if (hors_zone) { // Rien a faire : le point ne bouge pas
 				Result.push_back(P);
 				continue;
