@@ -46,7 +46,11 @@ int Usage()
     << "\t--a attribut_lien_avant" << std::endl
     << "\t--b attribut_lien_apres" << std::endl
     << "\t--w ecriture_polygones" << std::endl
-    << "\t--proj projection" << std::endl;
+    << "\t--proj projection" << std::endl
+    << "\t--alig max_angle_alignement" << std::endl
+    << "\t--diff max_diff_angle" << std::endl
+    << "\t--size min_vector_size" << std::endl;
+
   std::cout << "Projections disponibles :" << std::endl;
   for (int i = XGeoProjection::RGF93; i <= XGeoProjection::NC_RGNC91_UTM59; i++) {
     std::string shortname = XGeoProjection::ProjectionShortName((XGeoProjection::XProjCode)i);
@@ -74,7 +78,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 //
 int main(int argc, char* argv[])
 {
-  std::string version = "1.2";
+  std::string version = "1.3";
   std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
@@ -103,6 +107,13 @@ int main(int argc, char* argv[])
 
     std::cout << "Projection (L93, CC42, CC43, RGR92...) : ";
     std::cin >> proj;
+
+    std::cout << "Angle maximum d'alignement (en degres : 10) : ";
+    std::cin >> max_angle_alignement;
+    std::cout << "Difference angulaire maximale (en degres : 10) : ";
+    std::cin >> max_diff_angle;
+    std::cout << "Taille minimale des vecteurs de deformation (en m : 0.1) : ";
+    std::cin >> min_vector_size;
   }
   else {
     if ((argc % 2) != 1)
@@ -120,6 +131,9 @@ int main(int argc, char* argv[])
       if (token == "--b") attname_out = value;
       if (token == "--w") poly = value;
       if (token == "--proj") proj = value;
+      if (token == "--alig") max_angle_alignement = ::atof(value.c_str());
+      if (token == "--diff") max_diff_angle = ::atof(value.c_str());
+      if (token == "--size") min_vector_size = ::atof(value.c_str());
     }
   }
 
@@ -166,7 +180,9 @@ int main(int argc, char* argv[])
   matcher.SetLog(&error);
   XErrorInfo(&error, version);
   std::string command = "RPCUPairing --i " + file_in + " --o " + file_out + " --r " + file_result +
-    " --a " + attname_in + " --b " + attname_out + " --w " + poly;
+    " --a " + attname_in + " --b " + attname_out + " --w " + poly + 
+    " --alig " + std::to_string(max_angle_alignement) + " --diff " + std::to_string(max_diff_angle) +
+    " --size " + std::to_string(min_vector_size);
   XErrorInfo(&error, command);
 
   XWaitConsole wait;
