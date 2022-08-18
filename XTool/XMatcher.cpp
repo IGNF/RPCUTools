@@ -168,6 +168,15 @@ bool XMatcher::Match(XGeoVector* Vin, XGeoVector* Vout, std::string joint_key)
     m_Homo_out.clear();
     m_Idx_in.clear();
     m_Idx_out.clear();
+
+    if (!CleanPolygons(m_Pt_in) || !CleanPolygons(m_Pt_out)) {
+      if (m_Log != NULL) {
+        std::string mes = "Polygone incorrect pour " + joint_key;
+        XErrorAlert(m_Log, mes);
+      }
+      continue;
+    }
+
     if (FindHomolog() < 1) {// Pas de points homologues trouves
       if (m_Log != NULL) {
         std::string mes = "Pas de points homologues pour " + joint_key;
@@ -402,5 +411,25 @@ bool XMatcher::WritePoly(std::string id)
   }
   m_MidPoly << id << "\t" << "0" << "\t" << "1" << std::endl;
 
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// Nettoyage des polygones (on retire les doublons)
+//-----------------------------------------------------------------------------
+bool XMatcher::CleanPolygons(std::vector<XPt2D>& T)
+{
+  if (T.size() < 3)
+    return false;
+  std::vector<XPt2D> P;
+  P.push_back(T[0]);
+  for (size_t i = 1; i < T.size(); i++) {
+    if (T[i].egal(P[P.size() - 1], 0.01))
+      continue;
+    P.push_back(T[i]);
+  }
+  T = P;
+  if (T.size() < 3)
+    return false;
   return true;
 }

@@ -55,6 +55,7 @@ protected:
   std::ofstream       m_MifPoly;
   std::ofstream       m_MidPoly;
 
+  bool CleanPolygons(std::vector<XPt2D>& T);
   uint32 FindHomolog();
   bool FilterHomolog();
   bool WriteHomolog(std::string id, uint32 part);

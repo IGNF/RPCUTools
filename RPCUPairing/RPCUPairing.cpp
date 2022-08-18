@@ -78,7 +78,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 //
 int main(int argc, char* argv[])
 {
-  std::string version = "1.3";
+  std::string version = "1.4";
   std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
