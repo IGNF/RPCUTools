@@ -78,7 +78,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 //
 int main(int argc, char* argv[])
 {
-  std::string version = "1.4";
+  std::string version = "1.5";
   std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
@@ -202,8 +202,6 @@ int main(int argc, char* argv[])
     for (uint32 j = 0; j < C_out->NbVector(); j++) {
       Vout = C_out->Vector(j);
       if (!Vout->Visible()) // Vecteur deja utilise
-        continue;
-      if (!F_in.Intersect(Vout->Frame()))
         continue;
       if (id.compare(Vout->FindAttribute(attname_out)) == 0) {
         flag = true;
