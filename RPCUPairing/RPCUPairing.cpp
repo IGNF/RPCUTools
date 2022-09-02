@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include "XGeoBase.h"
 #include "XShapefile.h"
 #include "XMifMid.h"
@@ -78,7 +79,7 @@ XGeoClass* ImportFile(XGeoBase* base, std::string filename)
 //
 int main(int argc, char* argv[])
 {
-  std::string version = "1.5";
+  std::string version = "1.6";
   std::string file_in, file_out, file_result, attname_in, attname_out, poly, proj = "L93";
   double max_angle_alignement = 10.;
   double max_diff_angle = 10.;
@@ -185,6 +186,15 @@ int main(int argc, char* argv[])
     " --size " + std::to_string(min_vector_size);
   XErrorInfo(&error, command);
 
+  // Creation de la map des identifiants
+  std::cout << "Creation de la table des identifiants" << std::endl;
+  std::map<std::string, uint32> idMap;
+  for (uint32 i = 0; i < C_out->NbVector(); i++) {
+    XGeoVector* Vout = C_out->Vector(i);
+    std::string id = Vout->FindAttribute(attname_out);
+    idMap[id] = i;
+  }
+
   XWaitConsole wait;
   wait.SetStatus("Traitement");
   wait.SetRange(0, C_in->NbVector());
@@ -195,20 +205,25 @@ int main(int argc, char* argv[])
       continue;
 
     std::string id = Vin->FindAttribute(attname_in);
-    XFrame F_in = Vin->Frame();
-    F_in *= 2.;
-    XGeoVector* Vout = NULL;
+
+    std::map<std::string, uint32>::iterator jointure;
+    jointure = idMap.find(id);
     bool flag = false;
-    for (uint32 j = 0; j < C_out->NbVector(); j++) {
-      Vout = C_out->Vector(j);
-      if (!Vout->Visible()) // Vecteur deja utilise
-        continue;
-      if (id.compare(Vout->FindAttribute(attname_out)) == 0) {
+    XGeoVector* Vout = NULL;
+    if (jointure != idMap.end()) {
+      uint32 index = jointure->second;
+      if (index < C_out->NbVector()) {  // Normalement cela devrait toujours etre le cas !
         flag = true;
+        Vout = C_out->Vector(index);
+        if (!Vout->Visible()) {  // Vecteur deja utilise -> identifiant duplique
+          std::string mes = id + " duplique";
+          XErrorAlert(&error, mes);
+          continue;
+        }
         Vout->Visible(false); // Le vecteur ne sera plus utilise ensuite
-        break;
       }
     }
+
     if (!flag) {
       std::string mes = id + " sans correspondance dans le fichier apres";
       XErrorAlert(&error, mes);
@@ -219,6 +234,6 @@ int main(int argc, char* argv[])
 
   } // endfor i
 
-  std::cout << "Traitement termine de " << C_in->NbVector() << " objets" << std::endl;
+  std::cout << std::endl << "Traitement termine de " << C_in->NbVector() << " objets" << std::endl;
   return 0;
 }
